@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajax</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="heading mb-3">
+            <h3>Classification Iris Flower</h3>
+            <button class="btn btn-success">With Machine Learning.</button>
+            <a href="{{ url_for( 'auth.logout' )}}" class="btn btn-primary float-right">Log out</a>
+        </div>
+        <div class="row">
+            <div class="card col-lg-6">
+                <div class="card-body">
+                    <form method="POST" id="post-form" autocomplete="off">
+                        <div class="form-group row">
+                            <div class="col-sm-6 field">
+                                <label for="sepal_length">Sepal length</label>
+                                <input type="number" step="0.1" class="form-control form-predict" id="sepal_length"
+                                    placeholder="" required name="sepal_length">
+                            </div>
+                            <div class="col-sm-6 field">
+                                <label for="sepal_width">Sepal width</label>
+                                <input type="number" step="0.1" class="form-control form-predict" id="sepal_width"
+                                    placeholder="" required name="sepal_width">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6 field">
+                                <label for="petal_length">Petal length</label>
+                                <input type="number" step="0.1" class="form-control form-predict" id="petal_length"
+                                    placeholder="" required name="petal_length">
+                            </div>
+                            <div class="col-sm-6 field">
+                                <label for="petal_width">Petal width</label>
+                                <input type="number" step="0.1" class="form-control form-predict" id="petal_width"
+                                    placeholder="" required name="petal_width">
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button id="process" type="submit" value="Submit"
+                                class="btn btn-primary btn-block">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6 my-chart">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="item-predict mt-5">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="col-var" scope="col">Sepal Length</th>
+                        <th class="col-var" scope="col">Sepal Width</th>
+                        <th class="col-var" scope="col">Petal Length</th>
+                        <th class="col-var" scope="col">Petal Width</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td><span id="sl"></span></td>
+                        <td><span id="sw"></span></td>
+                        <td><span id="pl"></span></td>
+                        <td><span id="pw"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h5 class="heading-form mt-5">Classification result : <span id="prediction" class="main"
+                    role="status"></span>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+    $('#process').click(function () {
+        $(document).on('submit', '#post-form', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: 'http://127.0.0.1:5000/predict',
+                data: {
+                    sepal_length: $('#sepal_length').val(),
+                    sepal_width: $('#sepal_width').val(),
+                    petal_length: $('#petal_length').val(),
+                    petal_width: $('#petal_width').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                    action: 'POST'
+                },
+                success: function (json) {
+                    document.forms["post-form"].reset();
+                    document.getElementById("prediction").innerHTML = json['result']
+                    document.getElementById("sl").innerHTML = json['sepal_length']
+                    document.getElementById("sw").innerHTML = json['sepal_width']
+                    document.getElementById("pl").innerHTML = json['petal_length']
+                    document.getElementById("pw").innerHTML = json['petal_width']
+                },
+                error: function (xhr, errmsg, err) {
+                    console.warn();
+                }
+
+            });
+        });
+    });
+
+    const sepal_length = document.querySelector('#sepal_length');
+    const sepal_width = document.querySelector('#sepal_width');
+    const petal_length = document.querySelector('#petal_length');
+    const petal_width = document.querySelector('#petal_width');
+
+    const xtc = document.getElementById("myChart").getContext('2d');
+
+    const gradientFill = xtc.createLinearGradient(0, 0, 0, 300);
+    gradientFill.addColorStop(0, "rgba(255, 51,140, 1)");
+    gradientFill.addColorStop(1, "rgba(118, 17, 219, 0.4)");
+
+    const gradientStroke = xtc.createLinearGradient(0, 0, 0, 400);
+    gradientStroke.addColorStop(0, "rgba(255, 51,140, 0.5)");
+    gradientStroke.addColorStop(1, "rgba(0, 0, 0,0)");
+    let myChart = new Chart(xtc, {
+
+        type: 'line',
+        data: {
+            labels: ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"],
+            datasets: [{
+                fill: false,
+                data: [0, 0, 0, 0],
+                backgroundColor:
+                    gradientStroke
+                ,
+                borderColor:
+                    gradientFill
+                ,
+                pointBackgroundColor: gradientStroke,
+                borderWidth: 3,
+                fill: true
+            }]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            title: {
+                display: true,
+                fontSize: 20,
+                position: 'left',
+                text: 'Statistics ',
+                fontColor: '#999999'
+            },
+            maintainAspectRatio: false,
+            scales: {
+                yAxes: [{
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0.1)",
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: "#999999"
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        color: "rgba(0, 0, 0, 0.1)",
+                    },
+                    ticks: {
+                        fontColor: "#999999"
+                    }
+                }]
+            }
+
+        }
+    });
+
+    const updateChartValue = (input, dataOrder) => {
+
+        input.addEventListener('change', e => {
+            myChart.data.datasets[0].data[dataOrder] = e.target.value;
+            myChart.update();
+        });
+
+    };
+
+    updateChartValue(sepal_length, 0);
+    updateChartValue(sepal_width, 1);
+    updateChartValue(petal_length, 2);
+    updateChartValue(petal_width, 3);
+</script>
+
+</html>

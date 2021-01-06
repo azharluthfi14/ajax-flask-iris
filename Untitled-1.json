@@ -1,0 +1,25 @@
+[
+    {
+        "stmt": "SELECT * FROM user;",
+        "header": [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "avatar",
+            "password"
+        ],
+        "rows": [
+            [
+                "1",
+                "azhar",
+                "azhar",
+                "luthfi",
+                "azhar@yahoo.com",
+                "default.jpg",
+                "sha256$68jp4tuJ$bce719a65c6c8b91bcb6fb8619da5b4cea1a8512f0d886043ef075d29522acb2"
+            ]
+        ]
+    }
+]

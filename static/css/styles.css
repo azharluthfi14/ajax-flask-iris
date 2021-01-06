@@ -1,0 +1,15 @@
+body {
+  font-family: "Quicksand";
+}
+
+/* style signup.html */
+
+.image-register {
+  padding: 20px;
+}
+
+.image-register img {
+  width: 250px;
+  height: 250px;
+  margin-top: 90px;
+}

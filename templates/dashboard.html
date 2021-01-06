@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Dashboard</h1>
+    <a href="{{ url_for('auth.logout') }}">Sign out</a>
+    <a href="{{ url_for('main.list_ajax') }}">Form</a>
+    <h1>Username = {{ current_user.username }}</h1>
+    <h1>First name = {{ current_user.first_name }}</h1>
+    <h1>Last name = {{ current_user.last_name }}</h1>
+    <h1>Email address = {{ current_user.email }}</h1>
+    <img src="{{ avatar }}">
+</body>
+
+</html>
